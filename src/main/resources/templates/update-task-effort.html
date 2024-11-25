@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Task Effort</title>
+</head>
+<body>
+<h1>Update Remaining Effort for Task</h1>
+<form th:action="@{/task/update-task-effort/{taskId}(taskId=${task.id})}" method="post">
+    <input type="hidden" name="taskId" th:value="${task.id}" />
+    <table>
+        <tr>
+            <th>Title</th>
+            <td th:text="${task.title}"></td>
+        </tr>
+        <tr>
+            <th>Description</th>
+            <td th:text="${task.description}"></td>
+        </tr>
+        <tr>
+            <th>Current Remaining Effort</th>
+            <td th:text="${task.remainingEffort}"></td>
+        </tr>
+        <tr>
+            <th>New Remaining Effort</th>
+            <td><label>
+                <input type="number" name="remainingEffort" required />
+            </label></td>
+        </tr>
+    </table>
+    <button type="submit">Update Effort</button>
+</form>
+</body>
+</html>

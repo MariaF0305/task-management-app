@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Tasks by owner</title>
+</head>
+<body>
+<h1>Tasks for Owner ID: <span th:text="${ownerId}"></span> </h1>
+<table>
+    <tr>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Estimated Hours</th>
+        <th>Completed Hours</th>
+        <th>Remaining Effort</th>
+    </tr>
+    <tr th:each="task : ${tasks}">
+        <td th:text="${task.title}"></td>
+        <td th:text="${task.description}"></td>
+        <td th:text="${task.estimatedHours}"></td>
+        <td th:text="${task.completedHours}"></td>
+        <td th:text="${task.remainingEffort}"></td>
+    </tr>
+</table>
+</body>
+</html>

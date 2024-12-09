@@ -16,6 +16,7 @@ public class Task {
     private Integer estimatedHours;
     private Integer completedHours;
     private Integer remainingEffort;
+    private String estimationAccuracy;
 
     @ManyToOne
     @JoinColumn(name = "own_id", nullable = false)
@@ -24,12 +25,32 @@ public class Task {
     public Task() {
     }
 
-    public Task(String title, String description, Integer estimatedHours, Integer completedHours, Integer remainingEffort) {
+    public Task(String title, String description, Integer estimatedHours, Integer completedHours, Integer remainingEffort, String estimationAccuracy) {
         this.title = title;
         this.description = description;
         this.estimatedHours = estimatedHours;
         this.completedHours = completedHours;
         this.remainingEffort = remainingEffort;
+        this.estimationAccuracy = estimationAccuracy;
+    }
+
+    public String computeEstimationAccuracy() {
+        if (estimatedHours == null || estimatedHours == 0) {
+            return "NOT_ESTIMATED";
+        }
+        if (completedHours == null) {
+            return "NOT_ESTIMATED";
+        }
+        if (completedHours >= 0.9 * estimatedHours && completedHours <= 1.1 * estimatedHours) {
+            return "ACCURATELY_ESTIMATED";
+        }
+        if (completedHours < 0.9 * estimatedHours) {
+            return "OVER_ESTIMATED";
+        }
+        if (completedHours > 1.1 * estimatedHours) {
+            return "UNDER_ESTIMATED";
+        }
+        return "UNKNOWN";
     }
 
     public Long getId() {
@@ -86,6 +107,14 @@ public class Task {
 
     public void setOwner(Owner owner) {
         this.owner = owner;
+    }
+
+    public String getEstimationAccuracy() {
+        return estimationAccuracy;
+    }
+
+    public void setEstimationAccuracy(String estimationAccuracy) {
+        this.estimationAccuracy = estimationAccuracy;
     }
 
     @Override

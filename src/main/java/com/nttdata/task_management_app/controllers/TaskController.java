@@ -40,13 +40,16 @@ public class TaskController {
     public String getTaskById(@PathVariable Long taskId, Model model) {
         Optional<Task> task = taskRepository.findById(taskId);
         if (task.isPresent()) {
-            model.addAttribute("task", task.get());
+            Task taskEntity = task.get();
+            model.addAttribute("task", taskEntity);
+            model.addAttribute("estimationAccuracy", taskEntity.computeEstimationAccuracy());
             return "view-task";
         } else {
             model.addAttribute("error", "Task not found.");
             return "error-page";
         }
     }
+
 
     @GetMapping("/update-task-effort/{taskId}")
     public String showUpdateEffortForm(@PathVariable Long taskId, Model model) {

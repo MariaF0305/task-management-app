@@ -2,8 +2,10 @@ package com.nttdata.task_management_app.controllers;
 
 import com.nttdata.task_management_app.domain.Task;
 import com.nttdata.task_management_app.repositories.TaskRepository;
+import com.nttdata.task_management_app.service.TaskService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,31 +16,30 @@ import java.util.Set;
 
 @Controller
 @RequestMapping("/task")
+@PreAuthorize("isAuthenticated()")
 public class TaskController {
 
-    private final TaskRepository taskRepository;
+    private final TaskService taskService;
 
-    public TaskController(TaskRepository taskRepository) {
-        this.taskRepository = taskRepository;
+    public TaskController(TaskService taskService) {
+        this.taskService = taskService;
     }
 
     @RequestMapping("/all")
     public String getTasks(Model model) {
-        model.addAttribute("tasks", taskRepository.findAll());
-
+        model.addAttribute("tasks", taskService.findAllTasks());
         return "list-all-tasks";
     }
 
     @GetMapping("/by-owner/{ownerId}")
     public String getTasksByOwner(@PathVariable Long ownerId, Model model) {
-        model.addAttribute("tasks", taskRepository.findByOwnerId(ownerId));
-
+        model.addAttribute("tasks", taskService.findTasksByOwnerId(ownerId));
         return "list-tasks-by-owner";
     }
 
     @GetMapping("/{taskId}")
     public String getTaskById(@PathVariable Long taskId, Model model) {
-        Optional<Task> task = taskRepository.findById(taskId);
+        Optional<Task> task = taskService.findTaskById(taskId);
         if (task.isPresent()) {
             Task taskEntity = task.get();
             model.addAttribute("task", taskEntity);
@@ -50,39 +51,23 @@ public class TaskController {
         }
     }
 
-
-    @GetMapping("/update-task-effort/{taskId}")
-    public String showUpdateEffortForm(@PathVariable Long taskId, Model model) {
-        Optional<Task> taskOptional = taskRepository.findById(taskId);
-        if (taskOptional.isPresent()) {
-            model.addAttribute("task", taskOptional.get());
-            return "update-task-effort";
-        } else {
-            return "error";
-        }
-    }
-
     @PostMapping("/update-task-effort/{taskId}")
     public ResponseEntity<String> updateRemainingEffort(@PathVariable Long taskId, @RequestParam int remainingEffort) {
-        Optional<Task> taskOptional = taskRepository.findById(taskId);
-        if (taskOptional.isPresent()) {
-            Task task = taskOptional.get();
-            task.setRemainingEffort(remainingEffort);
-            taskRepository.save(task);
+        try {
+            taskService.updateTaskRemainingEffort(taskId, remainingEffort);
             return ResponseEntity.ok("Task effort updated successfully.");
-        } else {
+        } catch (RuntimeException e) {
             return ResponseEntity.status(404).body("Task not found.");
         }
     }
 
     @DeleteMapping("/remove/{taskId}")
     public ResponseEntity<String> removeTask(@PathVariable Long taskId) {
-        if (taskRepository.existsById(taskId)) {
-            taskRepository.deleteById(taskId);
+        try {
+            taskService.deleteTaskById(taskId);
             return ResponseEntity.ok("Task removed successfully.");
-        } else {
+        } catch (RuntimeException e) {
             return ResponseEntity.status(404).body("Task not found.");
         }
     }
-
 }

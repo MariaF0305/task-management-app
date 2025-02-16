@@ -1,8 +1,11 @@
 package com.nttdata.task_management_app.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 public class Task {
@@ -20,7 +23,11 @@ public class Task {
 
     @ManyToOne
     @JoinColumn(name = "own_id", nullable = false)
+    @JsonManagedReference
     private Owner owner;
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Comment> comments = new HashSet<>();
 
     public Task() {
     }
@@ -115,6 +122,20 @@ public class Task {
 
     public void setEstimationAccuracy(String estimationAccuracy) {
         this.estimationAccuracy = estimationAccuracy;
+    }
+
+    public Set<Comment> getComments() {
+        return comments;
+    }
+
+    public void addComment(Comment comment) {
+        comments.add(comment);
+        comment.setTask(this);
+    }
+
+    public void removeComment(Comment comment) {
+        comments.remove(comment);
+        comment.setTask(null);
     }
 
     @Override

@@ -1,15 +1,12 @@
 package com.nttdata.task_management_app.controllers;
 
 import com.nttdata.task_management_app.domain.Task;
-import com.nttdata.task_management_app.repositories.TaskRepository;
 import com.nttdata.task_management_app.service.TaskService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 import java.util.Set;

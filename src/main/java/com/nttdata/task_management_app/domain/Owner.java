@@ -1,5 +1,6 @@
 package com.nttdata.task_management_app.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,6 +28,7 @@ public class Owner implements UserDetails {
     private Set<String> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "owner")
+    @JsonManagedReference
     private Set<Task> tasks = new HashSet<>();
 
     public Owner() {
